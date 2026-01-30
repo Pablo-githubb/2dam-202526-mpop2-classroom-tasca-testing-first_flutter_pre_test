@@ -4,6 +4,7 @@ import 'package:first_flutter/data/services/authentication_service.dart';
 import 'package:first_flutter/presentation/viewmodels/login_vm.dart';
 import 'package:first_flutter/presentation/viewmodels/profile_vm.dart';
 import 'package:first_flutter/presentation/viewmodels/sentence_creation_vm.dart';
+import 'package:first_flutter/presentation/viewmodels/sentence_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -61,15 +62,47 @@ void main() {
 
   testWidgets('Test clicar botó Next', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
-    await tester.pumpAndSettle();
     // Busquem el botó Next i el cliquem
     final nextButton = find.widgetWithText(ElevatedButton, 'Next');
     expect(nextButton, findsOneWidget);
     await tester.tap(nextButton);
     await tester.pumpAndSettle();
     //La frase encara hi és (perquè el mock sempre retorna el mateix)
-    expect(find.text('Test sentence'), findsOneWidget);
+    expect(find.text('Test sentence'), findsNWidgets(2));
   });
+
+  testWidgets('Test troba botó fav i icona', (WidgetTester tester) async{
+    await tester.pumpWidget(creadorProviders());
+
+    final favoriteButton = find.widgetWithText(ElevatedButton, 'Like');
+    expect(favoriteButton, findsOneWidget);
+    final favoriteIcon = find.byIcon(Icons.favorite);
+    expect(favoriteIcon, findsOneWidget);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('Clica botó favorit', (WidgetTester tester) async {
+    await tester.pumpWidget(creadorProviders());
+
+    final favoriteButton = find.widgetWithText(ElevatedButton, 'Like');
+    expect(favoriteButton, findsOneWidget);
+    await tester.tap(favoriteButton);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('Actualització historial de paraules', (WidgetTester tester) async {
+    await tester.pumpWidget(creadorProviders());
+    
+    //Fem clic al botó de next
+    final nextButton = find.widgetWithText(ElevatedButton, 'Next');
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+
+    //Comprovem si a l'historial de paraules hi han icones de favorits
+    final historyTile = find.byType(ListTile);
+    expect(historyTile, findsOneWidget);
+  });
+
 }
 
 class FakeSentenceService implements ISentenceService {
