@@ -1,30 +1,86 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:first_flutter/data/models/sentence.dart';
+import 'package:first_flutter/data/repositories/authentication_repository.dart';
+import 'package:first_flutter/data/services/authentication_service.dart';
+import 'package:first_flutter/presentation/viewmodels/login_vm.dart';
+import 'package:first_flutter/presentation/viewmodels/profile_vm.dart';
+import 'package:first_flutter/presentation/viewmodels/sentence_creation_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:provider/provider.dart';
 import 'package:first_flutter/main.dart';
+import 'package:first_flutter/data/repositories/sentence_repository.dart';
+import 'package:first_flutter/data/services/sentence_service.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  Widget creadorProviders() {
+    return MultiProvider(
+      providers: [
+        Provider<ISentenceService>(
+          create: (context) =>
+              FakeSentenceService(), // ISentenceService instance
+        ),
+        Provider<IAuthenticationService>(
+          create: (context) =>
+              AuthenticationService(), // ILoginService instance
+        ),
+        Provider<ISentenceRepository>(
+          create: (context) => SentenceRepository(
+            sentenceService: context.read(),
+          ), //ISentenceRepository instance
+        ),
+        ChangeNotifierProvider<IAuthenticationRepository>(
+          create: (context) => AuthenticationRepository(
+            authenticationService: context.read(),
+          ), //ILoginRepository instance
+        ),
+        ChangeNotifierProvider<SentenceCreationVM>(
+          create: (context) =>
+              SentenceCreationVM(sentenceRepository: context.read()),
+        ),
+        ChangeNotifierProvider<LoginVM>(
+          create: (context) =>
+              LoginVM(authenticationRepository: context.read()),
+        ),
+        ChangeNotifierProvider<ProfileVM>(
+          create: (context) =>
+              ProfileVM(authenticationRepository: context.read()),
+        ),
+      ],
+      child: const MyApp(),
+    );
+  }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('Test mostra frase inicial', (WidgetTester tester) async {
+    // Creem l'aplicació amb els providers
+    await tester.pumpWidget(creadorProviders());
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Test sentence'), findsOneWidget);
   });
+
+  testWidgets('Test clicar botó Next', (WidgetTester tester) async {
+    await tester.pumpWidget(creadorProviders());
+    await tester.pumpAndSettle();
+    // Busquem el botó Next i el cliquem
+    final nextButton = find.widgetWithText(ElevatedButton, 'Next');
+    expect(nextButton, findsOneWidget);
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    //La frase encara hi és (perquè el mock sempre retorna el mateix)
+    expect(find.text('Test sentence'), findsOneWidget);
+  });
+}
+
+class FakeSentenceService implements ISentenceService {
+  @override
+  Future<Sentence> getNext() async {
+    // Retornem una frase fixa, sense HTTP!
+    return Sentence(text: 'Test sentence');
+  }
+
+  @override
+  Future<Sentence> createSentence(String text) async {
+    return Sentence(text: text);
+  }
 }

@@ -1,4 +1,3 @@
-import 'package:first_flutter/data/models/profile.dart';
 import 'package:first_flutter/data/models/sentence.dart';
 import 'package:first_flutter/data/repositories/authentication_repository.dart';
 import 'package:first_flutter/data/repositories/sentence_repository.dart';
