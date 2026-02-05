@@ -26,4 +26,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MYFIRSTFLUTTERBYPABLO }}
           projectId: myfirstflutterbypablo
         env:
-           FIREBASE_CLI_EXPERIMENTS: webframeworks
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
