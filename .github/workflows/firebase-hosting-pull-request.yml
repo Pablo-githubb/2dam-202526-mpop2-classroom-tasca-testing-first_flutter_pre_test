@@ -15,9 +15,9 @@ jobs:
       # Bloc per instal·lar Flutter
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: "stable"
       - name: Run Flutter Tests
-         run: flutter test
+        run: flutter test
       # Build web de Flutter
       - run: flutter build web
       - uses: FirebaseExtended/action-hosting-deploy@v0
