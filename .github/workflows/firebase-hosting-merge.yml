@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: subosito/flutter-action@v2
         with:
-        channel: 'stable'
+          channel: 'stable'
       - name: Run Flutter Tests
         run: flutter test
     # Build web de Flutter
