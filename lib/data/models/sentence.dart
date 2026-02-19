@@ -7,7 +7,7 @@ class Sentence {
 
   factory Sentence.fromJson(Map<String, dynamic> json) {
     return switch (json) {
-      {'title': String title} => Sentence(
+      {'quote': String title} => Sentence(
         text: title,
       ),
       _ => throw const FormatException('Failed to load Sentence.'),

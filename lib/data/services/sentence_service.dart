@@ -15,10 +15,9 @@ class SentenceService implements ISentenceService {
   Future<Sentence> getNext() async {
     count++;
     var response = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums/$count'),
+      Uri.parse('https://dummyjson.com/quotes/$count'),
     );
 
-    await Future.delayed(Duration(milliseconds: 2000));
     if (response.statusCode == 200) {
       return Sentence.fromJson(
         jsonDecode(response.body) as Map<String, dynamic>,
@@ -31,11 +30,11 @@ class SentenceService implements ISentenceService {
   @override
   Future<Sentence> createSentence(String sentenceText) async {
     var response = await http.post(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+      Uri.parse('https://dummyjson.com/quotes/add'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(<String, String>{'title': sentenceText}),
+      body: jsonEncode(<String, String>{'quote': sentenceText}),
     );
     if (response.statusCode != 201) {
       throw Exception('Failed to create album.');
