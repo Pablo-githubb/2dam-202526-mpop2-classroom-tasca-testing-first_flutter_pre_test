@@ -4,7 +4,6 @@ import 'package:first_flutter/data/services/authentication_service.dart';
 import 'package:first_flutter/presentation/viewmodels/login_vm.dart';
 import 'package:first_flutter/presentation/viewmodels/profile_vm.dart';
 import 'package:first_flutter/presentation/viewmodels/sentence_creation_vm.dart';
-import 'package:first_flutter/presentation/viewmodels/sentence_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +59,7 @@ void main() {
     expect(find.text('Test sentence'), findsOneWidget);
   });
 
- // testWidgets('Test clicar botó Next', (WidgetTester tester) async {
+  testWidgets('Test clicar botó Next', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
     // Busquem el botó Next i el cliquem
     final nextButton = find.text('Next');
@@ -71,7 +70,7 @@ void main() {
     expect(find.text('Test sentence'), findsNWidgets(2));
   });
 
- // testWidgets('Test troba botó fav i icona', (WidgetTester tester) async{
+  testWidgets('Test troba botó fav i icona', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
 
     final favoriteButton = find.widgetWithText(ElevatedButton, 'Like');
@@ -81,7 +80,7 @@ void main() {
     await tester.pumpAndSettle();
   });
 
- // testWidgets('Clica botó favorit', (WidgetTester tester) async {
+  testWidgets('Clica botó favorit', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
 
     final favoriteButton = find.widgetWithText(ElevatedButton, 'Like');
@@ -90,9 +89,11 @@ void main() {
     await tester.pumpAndSettle();
   });
 
- // testWidgets('Actualització historial de paraules', (WidgetTester tester) async {
+  testWidgets('Actualització historial de paraules', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(creadorProviders());
-    
+
     //Fem clic al botó de next
     final nextButton = find.widgetWithText(ElevatedButton, 'Next');
     await tester.tap(nextButton);
@@ -102,8 +103,7 @@ void main() {
     final historyTile = find.byType(ListTile);
     expect(historyTile, findsOneWidget);
   });
-
-
+}
 
 class FakeSentenceService implements ISentenceService {
   @override
