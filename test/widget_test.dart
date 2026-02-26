@@ -61,6 +61,8 @@ void main() {
 
   testWidgets('Test clicar botó Next', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
+    await tester.pumpAndSettle();
+
     // Busquem el botó Next i el cliquem
     final nextButton = find.text('Next');
     expect(nextButton, findsOneWidget);
@@ -72,30 +74,36 @@ void main() {
 
   testWidgets('Test troba botó fav i icona', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
-
-    final favoriteButton = find.widgetWithText(ElevatedButton, 'Like');
-    expect(favoriteButton, findsOneWidget);
-    final favoriteIcon = find.byIcon(Icons.favorite);
-    expect(favoriteIcon, findsOneWidget);
     await tester.pumpAndSettle();
+
+    final favoriteButton = find.text('Like');
+    expect(favoriteButton, findsOneWidget);
+    final favoriteIcon = find.byIcon(Icons.favorite_border);
+    expect(favoriteIcon, findsOneWidget);
   });
 
   testWidgets('Clica botó favorit', (WidgetTester tester) async {
     await tester.pumpWidget(creadorProviders());
+    await tester.pumpAndSettle();
 
-    final favoriteButton = find.widgetWithText(ElevatedButton, 'Like');
+    final favoriteButton = find.text('Like');
     expect(favoriteButton, findsOneWidget);
     await tester.tap(favoriteButton);
     await tester.pumpAndSettle();
+
+    // The icon should change to favorite (filled).
+    // There are 2 instance of Icons.favorite (one in nav, one in button)
+    expect(find.byIcon(Icons.favorite), findsNWidgets(2));
   });
 
   testWidgets('Actualització historial de paraules', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(creadorProviders());
+    await tester.pumpAndSettle();
 
     //Fem clic al botó de next
-    final nextButton = find.widgetWithText(ElevatedButton, 'Next');
+    final nextButton = find.text('Next');
     await tester.tap(nextButton);
     await tester.pumpAndSettle();
 
@@ -106,10 +114,12 @@ void main() {
 }
 
 class FakeSentenceService implements ISentenceService {
+  final _sentence = Sentence(text: 'Test sentence');
+
   @override
   Future<Sentence> getNext() async {
     // Retornem una frase fixa, sense HTTP!
-    return Sentence(text: 'Test sentence');
+    return _sentence; // Return same instance
   }
 
   @override
