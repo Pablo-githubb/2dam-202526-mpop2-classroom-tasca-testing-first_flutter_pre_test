@@ -1,0 +1,53 @@
+name: Flutter Build APK
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # 1. Configurem Java (necessari per a la part d'Android)
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # 2. Instal·lem l'SDK de Flutter
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        cache: true
+
+    # 3. Descarreguem dependències
+    - run: flutter pub get
+
+    # 4. Verifiquem el codi (opcional però recomanat)
+    - run: flutter test
+
+    - name: Decode Keystore
+      run: |
+        echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+    - name: Create key.properties
+      run: |
+        echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
+        echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+        echo "storeFile=upload-keystore.jks" >> android/key.properties
+
+    # 5. Construïm l'APK
+    - run: flutter build apk --release
+
+    # 6. Guardem el fitxer resultant
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: flutter-app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
